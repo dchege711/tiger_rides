@@ -1,1 +1,1 @@
-web: gunicorn api_handler:app
+web: gunicorn app:app
