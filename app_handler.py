@@ -26,10 +26,17 @@ def index():
 @app.route('/search/', methods=['POST', 'GET'])
 def search_doctors():
     if request.method == 'POST':
-        # list_of_attendees = []
+        # list_of_attendees = {}
         # with open("people_coming.txt", "r") as attendee_list:
         #     for attendee in attendee_list:
         #         list_of_attendees.append(attendee)
+        """
+        attendees = {
+            "CA": {
+                "Don": 
+            }
+        }
+        """
         
         list_of_attendees = [
             {
@@ -67,6 +74,10 @@ def tiger_cards(attendee_details):
     ])
 
 #_______________________________________________________________________________
+@app.route('/navigation.html')
+def return_navbar():
+    return render_template("navigation.html")
+
 
 @app.errorhandler(404)
 def notFoundError(error):
