@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html>
-<title>Tiger Rides</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-.fa-anchor,.fa-coffee {font-size:200px}
-</style>
-
 <head>
+    <meta charset="UTF-8">
     <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Tiger Rides</title>
+    <style>
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+        .fa-anchor,.fa-coffee {font-size:200px}
+    </style>
+    <script>
+        // Resize elements that should have matching heights
+        $(document).ready(function(){
+            $(window).resize(function(){
+                var height = $("#navigation-placeholder").height();
+                $("#dummy_padded_div").height(height);
+            });    
+        });
+    </script>
 </head>
 
 <body>
@@ -30,6 +38,10 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
     </script>
 
     <!-- End of Navigation Bar -->
+    
+    <!-- Padded element to make sure that the navigation bar never covers
+    the first element that has text. See the script in the header for info -->
+    <div class="w3-container" id="dummy_padded_div" style="height: 50px"></div>
 
     <!-- First Grid (Search Options)-->
     <div class="w3-row-padding w3-padding-16 w3-container">
@@ -47,7 +59,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
                     <option value="CA">
                 </datalist>
             
-                <label class="w3-padding-small" for="state">Specialty</label>
+                <label class="w3-padding-small" for="state">Which state are you coming from? </label>
                 <input class="w3-padding-small" list="origin_state" type="text" name="state" placeholder="e.g. NJ">
             
                 <button class="w3-button:hover w3-padding-small" type="submit" onclick="return searchTigers()">Search</button>
@@ -85,25 +97,12 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
         </script>
         
     </div>
+    <!-- End of First Grid -->
     
     <!-- Second Grid (Search Results)-->
-    <div class="w3-row-padding w3-padding-16 w3-container" id="tiger-search-results">
-        <!--
-        <div class="w3-card">
-            
-            <header class="w3-container w3-blue">
-                <h5>Dr. Chege Gitau</h5>
-            </header>
-            
-            <div class="w3-container">
-                <img src="https://i.imgur.com/yTPuGWe.jpg" alt="Yass!" class="w3-image w3-left w3-circle">
-            </div>
-            <p>Dentist<br>Ayfa Center, Nairobi<br>+254-700-999-333<br><br>Average Rating: 4.56</p>
-        </div>
-        -->
-        
-        
+    <div class="w3-row-padding w3-padding-16 w3-container" id="tiger-search-results">        
     </div>
+    <!-- End of Second Grid-->
 
     <!-- Footer -->
     <footer class="w3-container w3-padding-64 w3-center w3-opacity">
