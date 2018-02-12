@@ -78,7 +78,6 @@ def tiger_cards(attendee_details):
 def return_navbar():
     return render_template("navigation.html")
 
-
 @app.errorhandler(404)
 def notFoundError(error):
     # This probably isn't API friendly, but ¯\_(ツ)_/¯
