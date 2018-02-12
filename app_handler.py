@@ -9,6 +9,7 @@ How much information do we give provide? Everything since it's in public domain?
 from flask import Flask, jsonify, make_response, request, Response, render_template
 from flask_cors import CORS, cross_origin
 import os
+import filter_trips
 
 app = Flask(__name__)
 CORS(app)   # This allows Cross-Origin-Resource-Sharing on all methods
@@ -26,34 +27,20 @@ def index():
 @app.route('/search/', methods=['POST', 'GET'])
 def search_doctors():
     if request.method == 'POST':
-        # list_of_attendees = {}
-        # with open("people_coming.txt", "r") as attendee_list:
-        #     for attendee in attendee_list:
-        #         list_of_attendees.append(attendee)
-        """
-        attendees = {
-            "CA": {
-                "Don": 
-            }
-        }
-        """
-        
-        list_of_attendees = [
-            {
-                "name": "Don",
-                "location": "California",
-                "size": "2"
-            },
-            {
-                "name": "Pamela",
-                "location": "New Jersey",
-                "size": "4"
-            },
-        ]
+        state = request.get_json()["origin_state"]        
+        list_of_attendees = filter_trips.get_travellers_from_state(state)
                 
-        results_in_html = []
+        results_in_html = """
+        <div class='w3-responsive'><table class='w3-table-all'>
+            <tr>
+                <th>Name</th><th>Number of People Coming</th>
+                <th>City</th><th>State</th>
+            </tr>
+        """
         for result in list_of_attendees:
-            results_in_html.append(tiger_cards(result))
+            results_in_html = "".join([results_in_html, tiger_cards(result)])
+            
+        results_in_html = "".join([results_in_html, "</table></div>"])
         
         return jsonify(results_in_html)
     
@@ -61,16 +48,11 @@ def search_doctors():
         return "OK", 200
 
 def tiger_cards(attendee_details):
-    """
-    Example: 
-    <div class="w3-card w3-light-gray">        
-        <p>Name<br>Location<br>Size<br></p>
-    </div>
-    """
     return ''.join([
-        '<div class="w3-card w3-padding-16 w3-light-gray"><p>',
-        attendee_details["name"], "<br>", attendee_details["location"],
-        "<br>", attendee_details["size"], "<br></p></div>"
+        "<tr><td>", attendee_details["name"], "</td>",
+        "<td>", attendee_details["size"], "</td>",
+        "<td>", attendee_details["city"], "</td>",
+        "<td>", attendee_details["state_abbr"], "</td>", "</tr>"
     ])
 
 #_______________________________________________________________________________

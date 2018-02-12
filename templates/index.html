@@ -88,10 +88,11 @@
                         if (this.readyState == 4 && this.status == 200) {
                             var searchResults = JSON.parse(this.responseText);
                             var tigerCards = document.getElementById("tiger-search-results");
-                            tigerCards.innerHTML = "";
-                            for (var i = 0; i < searchResults.length; i++) {
-                                tigerCards.insertAdjacentHTML("beforeend", searchResults[i]);
-                            }
+                            tigerCards.innerHTML = searchResults;
+                            // tigerCards.innerHTML = "";
+                            // for (var i = 0; i < searchResults.length; i++) {
+                            //     tigerCards.insertAdjacentHTML("beforeend", searchResults[i]);
+                            // }
                         }
                     
                     }
