@@ -18,12 +18,15 @@ with open("./static/data/people_coming_1969.csv") as people_coming:
             
 def get_travellers_from_state(state):
     results = []
-    for trip in trips_from_given_state[state]:
-        results.append({
-            "name": trip[0],
-            "size": trip[1],
-            "city": trip[2],
-            "state_abbr": trip[4]
-        })
-    return results
+    try:
+        for trip in trips_from_given_state[state]:
+            results.append({
+                "name": trip[0],
+                "size": trip[1],
+                "city": trip[2],
+                "state_abbr": trip[4]
+            })
+        return results
+    except KeyError:
+        return results 
         
