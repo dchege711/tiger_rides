@@ -50,6 +50,7 @@ def _get_either_male_or_female_name():
 
 def randomize_names():
     output_file = open("./static/data/people_coming_randomized_names.csv", "w")
+    output_file.write("Name,Number of People,City/Town,State,Abbreviations\n")
     for key in data_with_real_names.keys():
         for group in data_with_real_names[key]:
             new_name = _helper_randomize_name(group[0])
