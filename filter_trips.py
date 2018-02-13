@@ -17,6 +17,8 @@ with open("./static/data/people_coming_1969.csv") as people_coming:
             ])
             
 def get_travellers_from_state(state):
+    assert isinstance(state, str), "State should be a string"
+    state = state.upper()
     results = []
     try:
         for trip in trips_from_given_state[state]:
