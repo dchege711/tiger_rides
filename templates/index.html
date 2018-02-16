@@ -14,10 +14,16 @@
         .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
         .fa-anchor,.fa-coffee {font-size:200px}
         body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
             background-repeat: no-repeat;
             background-blend-mode: overlay;
             background-size: 100%;
             background-image: url({{ url_for('static', filename='img/nassau_hall.jpg') }});            
+        }
+        .tiger_rides_body{
+            flex: 1
         }
     </style>
     <script>
@@ -45,7 +51,7 @@
 
     <!-- End of Navigation Bar -->
     
-    <div class="w3-container w3-white" style="opacity:0.9">
+    <div class="w3-container w3-white" style="opacity:0.9" id="tiger_rides_body">
     
         <!-- Padded element to make sure that the navigation bar never covers
         the first element that has text. See the script in the header for info -->
@@ -104,10 +110,6 @@
                             var searchResults = JSON.parse(this.responseText);
                             var tigerCards = document.getElementById("tiger-search-results");
                             tigerCards.innerHTML = searchResults;
-                            // tigerCards.innerHTML = "";
-                            // for (var i = 0; i < searchResults.length; i++) {
-                            //     tigerCards.insertAdjacentHTML("beforeend", searchResults[i]);
-                            // }
                         }
                     
                     }
