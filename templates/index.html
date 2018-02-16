@@ -22,7 +22,7 @@
             background-size: 100%;
             background-image: url({{ url_for('static', filename='img/nassau_hall.jpg') }});            
         }
-        .tiger_rides_body{
+        #tiger_rides_body {
             flex: 1
         }
     </style>
@@ -51,7 +51,9 @@
 
     <!-- End of Navigation Bar -->
     
-    <div class="w3-container w3-white" style="opacity:0.9" id="tiger_rides_body">
+    <!-- Main part of the Tiger Riges Application UI -->
+    
+    <div class="w3-container w3-white" style="opacity:0.85" id="tiger_rides_body">
     
         <!-- Padded element to make sure that the navigation bar never covers
         the first element that has text. See the script in the header for info -->
@@ -132,14 +134,18 @@
     
     </div>
     
-    <!-- Footer -->
-    <footer class="w3-row-padding w3-padding-small w3-container w3-black" style="position:fixed; bottom:0; width:100%; left:0">
+    <!-- End of Tiger Rides UI -->
+    
+    <!-- Footer style -->
+    <footer class="w3-row-padding w3-padding-small w3-container w3-black">
         <p class="w3-center">
             CSS provided by <a href="https://www.w3schools.com/w3css/">W3 CSS</a><br>
             Logo made with <a href="https://www.designevo.com/" title="Free Online Logo Maker">DesignEvo</a><br>
             &#169; Chege Gitau & Komron Shayegan, 2018
         </p>
     </footer>
+    
+    <!-- End of Footer -->
 
     <script>
     function toggleMenuOnSmallScreens() {
