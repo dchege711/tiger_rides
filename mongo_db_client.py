@@ -21,14 +21,11 @@ class tiger_rides_db():
 		
 	def _initialize(self):
 		self.collection.drop_indexes()
-		self.collection.create_index([("email", TEXT)], unique=True)
-		self.collection.create_index([("first_name", DESCENDING)])
-		self.collection.create_index([("last_name", DESCENDING)])
-		self.collection.create_index([("origin", HASHED)])
-		self.collection.create_index([("leaving_date", DESCENDING)])
-		self.collection.create_index([("leaving_time", DESCENDING)])
-		self.collection.create_index([("has_car", DESCENDING)])
-		self.collection.create_index([("password", DESCENDING)])
+		self.collection.create_index([("Email", HASHED)])
+		self.collection.create_index([("Origin", TEXT)])
+		self.collection.create_index([("dDate", DESCENDING)])
+		self.collection.create_index([("dTime", DESCENDING)])
+		self.collection.create_index([("Hascar", DESCENDING)])
 		
 	def create(self, doc):
 		return self.collection.insert_one(doc)
@@ -44,7 +41,7 @@ class tiger_rides_db():
 		
 def main():
 	tiger_rides = tiger_rides_db()
-	# tiger_rides._initialize()
+	tiger_rides._initialize()
 	# tiger_rides.create({
 	# 	"email": "nothing@gmail.com",
 	# 	"first_name": "Kaboom",

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Tiger Rides</title>
+    <style>
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+        .fa-anchor,.fa-coffee {font-size:200px}
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            background-repeat: no-repeat;
+            background-blend-mode: overlay;
+            background-size: 100%;
+            background-image: url({{ url_for('static', filename='img/nassau_hall.jpg') }});            
+        }
+        #tiger_rides_body {
+            flex: 1
+        }
+    </style>
+    <script>
+        // Resize elements that should have matching heights
+        $(document).ready(function(){
+            $(window).resize(function(){
+                var height = $("#navigation-placeholder").height();
+                $("#dummy_padded_div").height(height);
+            });    
+        });
+        
+    </script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <div id="navigation-placeholder"></div>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(function(){
+            $("#navigation-placeholder").load("./navigation.html");
+        });
+    </script>
+
+    <!-- End of Navigation Bar -->
+    
+    <!-- Main part of the Tiger Riges Application UI -->
+    
+    <div class="w3-container w3-white" style="opacity:0.85" id="tiger_rides_body">
+    
+        <!-- Padded element to make sure that the navigation bar never covers
+        the first element that has text. See the script in the header for info -->
+        <div class="w3-container" id="dummy_padded_div" style="height: 50px"></div>
+
+        <!-- Present a Registration Form-->
+        <div class="w3-container">
+            <div class="w3-container w3-padding-16" id="registration_form_holder">
+                
+                <h4>Glad to have you join us!<br></h4>
+                                
+                <form id="registration_form">
+                    
+                    <!-- <p>Please fill out the following fields:</p>
+                    <label class="w3-padding-small" for="state">First Name </label>
+                    <input class="w3-padding-small" list="origin_state" type="text" name="state" placeholder="e.g. NJ"> -->
+                    
+                    <p>Please fill out the following fields:</p>
+                    <label for="fName"> First Name:</label><input type="text" name="fName" value="test" required/>
+                    <br />
+                    <label for="lName"> Last Name: </label><input type="text" name="lName" value="test" required/>
+                    <br />
+                    <label for="Email"> Email: </label><input type="text" name ="Email" value="test" required/>
+                    <br />
+                    <label for="Pass"> Password: </label><input type="password" name="Pass" minlength="8" value="tedfvfvfvfst" required/>
+
+                    <p>Please enter your trip information: </p>
+                    <label for="Origin">Origin:</label><input type="text" name="Origin" value="test" required/>
+                    <br />
+                    <label for="dDate">Departure Date:</label><input type="date" name="dDate" value="2018-02-04" required/>
+                    <br />
+                    <label for="dTime">Departure Time:</label><input type="time" name="dTime" value="00:00" required/>
+
+                    <p>Do you have a car: <p>
+                    <input type="radio" name="Hascar" value="Yes" /> <label for="Hascar">Yes</label>
+                    <input type="radio" name="Hascar" value="No" /> <label for="Hascar">No</label>
+                    <p>If you have a car, how many seats can you offer:</p>
+                    <input type="number" name="Seats" />
+                
+                    <button class="w3-button:hover w3-padding-small" type="submit" onclick="return registerNewMember()">Register</button>
+                    
+                </form>
+                
+            </div>
+            
+            <!-- Process the search query -->
+            <script>
+                function registerNewMember() {
+                    var form = document.getElementById("registration_form");
+                    if (form.reportValidity() === false) {
+                        alert("Please fill out the required fields");
+                        return;
+                    }
+                    
+                    var elements = form.elements;
+                    var payload = {};
+                    
+                    for (var i = 0; i < elements.length; i++) {
+                        payload[elements[i].name] = elements[i].value;
+                    }
+                    
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            var results = JSON.parse(this.responseText);
+                            if (results["registration_status"] == true) {
+                                alert("Successful registration. Now log in with your email address and password");
+                                window.location = "/";
+                            } else {
+                                alert(results["registration_message"]);
+                                window.location = "/register";
+                            }
+                        }
+                    
+                    }
+                    xhttp.open("POST", "/register/", true);
+                    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                    xhttp.send(JSON.stringify(payload));
+                    
+                    // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
+                    return false;
+                }
+            </script>
+        </div>
+        
+        <!-- End of Second Grid-->
+    
+    </div>
+    
+    <!-- End of Tiger Rides UI -->
+    
+    <!-- Footer style -->
+    <footer class="w3-row-padding w3-padding-small w3-container w3-black">
+        <p class="w3-center">
+            CSS provided by <a href="https://www.w3schools.com/w3css/">W3 CSS</a><br>
+            Logo made with <a href="https://www.designevo.com/" title="Free Online Logo Maker">DesignEvo</a><br>
+            &#169; Chege Gitau & Komron Shayegan, 2018
+        </p>
+    </footer>
+    
+    <!-- End of Footer -->
+
+    <script>
+    function toggleMenuOnSmallScreens() {
+        var x = document.getElementById("navDemo");
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+    }
+    </script>
+
+</body>
+
+</html>

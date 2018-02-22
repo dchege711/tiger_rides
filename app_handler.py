@@ -10,9 +10,12 @@ from flask import Flask, jsonify, make_response, request, Response, render_templ
 from flask_cors import CORS, cross_origin
 import os
 import filter_trips
+from mongo_db_client import tiger_rides_db
+from pprint import pprint
 
 app = Flask(__name__)
 CORS(app)   # This allows Cross-Origin-Resource-Sharing on all methods
+tiger_rides = tiger_rides_db()
 
 #_______________________________________________________________________________
 
@@ -58,6 +61,34 @@ def tiger_cards(attendee_details):
         "<td>", attendee_details["city"], "</td>",
         "<td>", attendee_details["state_abbr"], "</td>", "</tr>"
     ])
+    
+@app.route('/register/', methods=["POST", "GET"])
+def register_new_users():
+    if request.method == "GET":
+        return render_template("new_member_registration.html")
+    if request.method == "POST":
+        payload = request.get_json()
+        
+        duplicate_account = tiger_rides.read({"Email": payload["Email"]})
+        if (duplicate_account is not None):
+            return jsonify({
+                "registration_status": False,
+                "registration_message": "That email address has already been taken."
+            })
+        
+        results = tiger_rides.create(payload)
+        
+        try:
+            new_document_id = results.inserted_id
+            return jsonify({
+                "registration_status": True,
+                "registration_message": "Successful registration. Now log in with your email address and password"
+            })
+        except Exception as e:
+            return jsonify({
+                "registration_status": False,
+                "registration_message": "Unsuccessful registration. Please try again after a few minutes."
+            })
 
 #_______________________________________________________________________________
 @app.route('/navigation.html')
