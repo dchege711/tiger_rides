@@ -1,4 +1,4 @@
-import mongo_db_client import tiger_rides_db
+from mongo_db_client import tiger_rides_db
 import trip_actions
 
 user_db = tiger_rides_db("attendee_details")

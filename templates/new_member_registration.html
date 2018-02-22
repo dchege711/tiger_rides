@@ -16,41 +16,17 @@
         body {
             display: flex;
             min-height: 100vh;
-            flex-direction: column;
-            background-repeat: no-repeat;
-            background-blend-mode: overlay;
-            background-size: 100%;
-            background-image: url({{ url_for('static', filename='img/nassau_hall.jpg') }});            
-        }
-        
-        input[type=text], select {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        input[type=submit] {
-            width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type=submit]:hover {
-            background-color: #45a049;
+            flex-direction: column; 
+            background-color: #E0E0E0;         
         }
         
         form {
             border-radius: 5px;
-            padding: 20px;
+            background-color: white;
+            align-content: center;
+            min-width: 80%;
+            max-width: 80%;
+            padding: 25px;
         }
         
         #tiger_rides_body {
@@ -85,7 +61,7 @@
     
     <!-- Main part of the Tiger Riges Application UI -->
     
-    <div class="w3-container w3-white" style="opacity:0.85" id="tiger_rides_body">
+    <div class="w3-container w3-padding-large" id="tiger_rides_body">
     
         <!-- Padded element to make sure that the navigation bar never covers
         the first element that has text. See the script in the header for info -->
@@ -93,32 +69,48 @@
 
         <!-- Present a Registration Form-->
         <div class="w3-container w3-padding-large">
-            <div class="w3-container w3-padding-16" id="registration_form_holder">
+            <div class="w3-container w3-padding-large" id="registration_form_holder">
                 
-                <h4>Glad to have you join us!<br></h4>
+                <h5>Glad to have you join us!<br></h5>
                                 
                 <form id="registration_form">
                     
-                    <p>Please fill out the following fields:</p>
-                    <label for="first_name"> First Name:</label><input type="text" name="first_name" required/>
+                    <p><strong>Please fill out the following fields:</strong></p>
+                    
+                    <label for="first_name"> First Name:</label>
+                    <input class="w3-input" type="text" name="first_name" required/>
                     <br />
-                    <label for="last_name"> Last Name: </label><input type="text" name="last_name"required/>
+                    
+                    <label for="last_name"> Last Name: </label>
+                    <input class="w3-input" type="text" name="last_name"required/>
                     <br />
-                    <label for="email_address"> Email: </label><input type="text" name ="email_address" required/>
+                    
+                    <label for="email_address"> Email: </label>
+                    <input class="w3-input" type="text" name ="email_address" required/>
                     <br />
-                    <label for="pass_word"> Password: </label><input type="password" name="pass_word" minlength="8" required/>
+                    
+                    <label for="pass_word"> Password: </label>
+                    <input class="w3-input" type="password" name="pass_word" minlength="8" required/>
+                    <br />
 
-                    <p>Please enter your trip information: </p>
-                    <label for="origin">Origin:</label><input type="text" name="origin" />
+                    <p><strong>Please enter your trip information:</strong></p>
+                    
+                    <label for="origin">Origin:</label>
+                    <input class="w3-input" type="text" name="origin" />
                     <br />
-                    <label for="departure_date">Departure Date:</label><input type="date" name="departure_date" />
+                    
+                    <label for="departure_date">Departure Date:</label>
+                    <input class="w3-input" type="date" name="departure_date" />
                     <br />
-                    <label for="departure_time">Departure Time:</label><input type="time" name="departure_time" />
+                    
+                    <label for="departure_time">Departure Time:</label>
+                    <input class="w3-input" type="time" name="departure_time" />
 
                     <p>If you have a car, how many seats can you offer?</p>
-                    <input type="number" name="seats_available"/>
+                    <input class="w3-input" type="number" name="seats_available"/>
+                    <br />
                 
-                    <button type="submit" onclick="return registerNewMember()">Register</button>
+                    <button class="w3-button w3-green" type="submit" onclick="return registerNewMember()">Register</button>
                     
                 </form>
                 
