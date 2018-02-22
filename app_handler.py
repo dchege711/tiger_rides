@@ -9,13 +9,14 @@ How much information do we give provide? Everything since it's in public domain?
 from flask import Flask, jsonify, make_response, request, Response, render_template, send_file
 from flask_cors import CORS, cross_origin
 import os
+from pprint import pprint
+
 import filter_trips
 from mongo_db_client import tiger_rides_db
-from pprint import pprint
+import user_actions
 
 app = Flask(__name__)
 CORS(app)   # This allows Cross-Origin-Resource-Sharing on all methods
-tiger_rides = tiger_rides_db()
 
 #_______________________________________________________________________________
 
@@ -66,31 +67,60 @@ def tiger_cards(attendee_details):
 def register_new_users():
     if request.method == "GET":
         return render_template("new_member_registration.html")
-    if request.method == "POST":
+    elif request.method == "POST":
         payload = request.get_json()
         
-        duplicate_account = tiger_rides.read({"Email": payload["Email"]})
-        if (duplicate_account is not None):
+        found_duplicate = user_actions.is_in_db({"email_address": payload["email_address"]})
+        if (found_duplicate):
             return jsonify({
                 "registration_status": False,
                 "registration_message": "That email address has already been taken."
             })
         
-        results = tiger_rides.create(payload)
-        
-        try:
-            new_document_id = results.inserted_id
+        successfully_registered_user = user_actions.register_user(payload)[0]
+        if successfully_registered_user:
             return jsonify({
                 "registration_status": True,
                 "registration_message": "Successful registration. Now log in with your email address and password"
             })
-        except Exception as e:
+        else:
             return jsonify({
                 "registration_status": False,
                 "registration_message": "Unsuccessful registration. Please try again after a few minutes."
             })
+            
+@app.route('/login/', methods=["GET"])
+def handle_login():
+    if request.method == "GET":
+        return render_template("login.html")
+    
+    elif request.method == "POST":
+        payload = request.get_json()
+        account = tiger_rides.read({
+            "Email": payload["Email"],
+            "Pass": payload["Pass"]
+        })
+        
+        if account is None:
+            return jsonify({
+                "login_successful": False,
+                "login_payload": "Incorrect password or email. Did you want to <a href='\register'>register</a>?"
+            })
+            
+        else:
+            results = {}
+            results["fName"] = account["fName"]
+            results["trips"] = []
+            for trip in account["trips"]:
+                results["trips"].append(trip)
+            return jsonify({
+                "login_successful": True,
+                "login_payload": results
+            })
+            
 
 #_______________________________________________________________________________
+
 @app.route('/navigation.html')
 def return_navbar():
     return render_template("navigation.html")

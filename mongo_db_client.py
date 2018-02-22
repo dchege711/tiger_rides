@@ -11,21 +11,28 @@ from bson.son import SON
 
 #_______________________________________________________________________________
 
+indexes = {
+	"attendee_details": [
+		("Email", HASHED), 
+	],
+	"trip_details": [
+		("origin", TEXT), ("departure_date", DESCENDING),
+		("departure_time", DESCENDING), ("seats_available", DESCENDING)
+	]
+}
+
 class tiger_rides_db():
 	
-	def __init__(self):
+	def __init__(self, collection_name):
 		self.client = MongoClient(os.environ["TIGER_RIDES_MONGO_URI"])
 		self.db = self.client["dgitau_orf401"]
-		
-		self.collection = self.db["attendee_details"]
+		self.collection_name = collection_name
+		self.collection = self.db[collection_name]
 		
 	def _initialize(self):
 		self.collection.drop_indexes()
-		self.collection.create_index([("Email", HASHED)])
-		self.collection.create_index([("Origin", TEXT)])
-		self.collection.create_index([("dDate", DESCENDING)])
-		self.collection.create_index([("dTime", DESCENDING)])
-		self.collection.create_index([("Hascar", DESCENDING)])
+		for index in indexes[self.collection_name]:
+			self.collection.create_index([index])
 		
 	def create(self, doc):
 		return self.collection.insert_one(doc)
@@ -36,12 +43,21 @@ class tiger_rides_db():
 			{"$set": key_value_pairs}
 		)
 		
+	def get_next_id(self):
+		metadata = self.collection.find_one({"document_type": "metadata"})
+		next_id = metadata["next_id"]
+		self.update(
+			{"_id": metadata["_id"]},
+			{"next_id": next_id + 1}
+		)
+		return next_id
+		
 	def read(self, query):
 		return self.collection.find_one(filter=query)
 		
 def main():
-	tiger_rides = tiger_rides_db()
-	tiger_rides._initialize()
+	tiger_rides = tiger_rides_db("attendee_details")
+	# tiger_rides._initialize()
 	# tiger_rides.create({
 	# 	"email": "nothing@gmail.com",
 	# 	"first_name": "Kaboom",
@@ -52,7 +68,7 @@ def main():
 	# 	"has_car": "no",
 	# 	"password": "lets_save_passwords_in_plain_text"
 	# })
-	print(tiger_rides.read({"origin": "Nashville"}))
+	print(tiger_rides.get_next_id())
 	
 	
 	

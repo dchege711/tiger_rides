@@ -93,75 +93,20 @@
 
         <!-- Present a Registration Form-->
         <div class="w3-container w3-padding-large">
-            <div class="w3-container w3-padding-16" id="registration_form_holder">
-                
-                <h4>Glad to have you join us!<br></h4>
+            <div class="w3-container w3-padding-16" id="main_div">
                                 
-                <form id="registration_form">
+                <form id="login_form">
                     
-                    <p>Please fill out the following fields:</p>
-                    <label for="first_name"> First Name:</label><input type="text" name="first_name" required/>
-                    <br />
-                    <label for="last_name"> Last Name: </label><input type="text" name="last_name"required/>
-                    <br />
-                    <label for="email_address"> Email: </label><input type="text" name ="email_address" required/>
-                    <br />
-                    <label for="pass_word"> Password: </label><input type="password" name="pass_word" minlength="8" required/>
-
-                    <p>Please enter your trip information: </p>
-                    <label for="origin">Origin:</label><input type="text" name="origin" />
-                    <br />
-                    <label for="departure_date">Departure Date:</label><input type="date" name="departure_date" />
-                    <br />
-                    <label for="departure_time">Departure Time:</label><input type="time" name="departure_time" />
-
-                    <p>If you have a car, how many seats can you offer?</p>
-                    <input type="number" name="seats_available"/>
+                    <label for="Email"> Email: </label><input type="text" name ="Email" required/>
+                    <br /></br />
+                    <label for="Pass"> Password: </label><input type="password" name="Pass" minlength="8" required/>
                 
-                    <button type="submit" onclick="return registerNewMember()">Register</button>
+                    <button type="submit" onclick="return logInMember()">Log In</button>
                     
                 </form>
                 
             </div>
             
-            <!-- Process the search query -->
-            <script>
-                function registerNewMember() {
-                    var form = document.getElementById("registration_form");
-                    if (form.reportValidity() === false) {
-                        alert("Please fill out the required fields");
-                        return;
-                    }
-                    
-                    var elements = form.elements;
-                    var payload = {};
-                    
-                    for (var i = 0; i < elements.length; i++) {
-                        payload[elements[i].name] = elements[i].value;
-                    }
-                    
-                    var xhttp = new XMLHttpRequest();
-                    xhttp.onreadystatechange = function() {
-                        if (this.readyState == 4 && this.status == 200) {
-                            var results = JSON.parse(this.responseText);
-                            if (results["registration_status"] == true) {
-                                alert("Successful registration. Now log in with your email address and password");
-                                window.location = "/";
-                            } else {
-                                alert(results["registration_message"]);
-                                window.location = "/register";
-                            }
-                        }
-                    
-                    }
-                    xhttp.open("POST", "/register/", true);
-                    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                    xhttp.send(JSON.stringify(payload));
-                    
-                    // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
-                    return false;
-                }
-            </script>
         </div>
         
         <!-- End of Second Grid-->
@@ -190,6 +135,50 @@
             x.className = x.className.replace(" w3-show", "");
         }
     }
+    </script>
+    
+    <!-- Process the login -->
+    <script>
+        function logInMember() {
+            var form = document.getElementById("login_form");
+            if (form.reportValidity() === false) {
+                alert("Please fill out the required fields");
+                return;
+            }
+            
+            var elements = form.elements;
+            var payload = {};
+            
+            for (var i = 0; i < elements.length; i++) {
+                payload[elements[i].name] = elements[i].value;
+            }
+            
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var results = JSON.parse(this.responseText);
+                    if (results["login_successful"] == true) {
+                        loadUserDetails(results["login_payload"]);
+                    } else {
+                        alert(results["login_payload"]);
+                    }
+                }
+            
+            }
+            xhttp.open("POST", "/register/", true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify(payload));
+            
+            // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
+            return false;
+        }
+    </script>
+    
+    <script>
+        function loadUserDetails(userDetails) {
+            var mainBody = document.getElementById("tiger_rides_body");
+            // Trip id, user id, 
+        }
     </script>
 
 </body>
