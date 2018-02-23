@@ -130,6 +130,14 @@ def read_trips():
         except KeyError as e:
             print("POST /read_trips/", repr(e))
             return {}
+        
+@app.route("/update_trip/", methods=["POST"])
+def update_trip():
+    if request.method == "POST":
+        results = trip_actions.update_trip(request.get_json())
+        print("POST /update_trip/ returned:")
+        print(results)
+        return jsonify(results)
 
 #_______________________________________________________________________________
 

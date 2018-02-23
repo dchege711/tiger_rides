@@ -74,7 +74,7 @@
                     
                     <label for="email_address"> Email: </label><input class="w3-input" type="text" name ="email_address" required/>
                     <br /></br />
-                    <label for="password"> Password: </label><input class="w3-input" type="password" name="password" minlength="8" required/>
+                    <label for="password"> Password: </label><input class="w3-input" type="password" name="password" minlength="8" value="nothingworks" required/>
                     <br /><br />
                     <button class="w3-button w3-center w3-green" type="submit" onclick="return logInMember()">Log In</button>
                     
@@ -128,6 +128,71 @@
         }
     </script>
     
+    <script type="text/text/javascript">
+        function editTrip() {
+            var tripIdAsNum = parseInt(20, 10);
+            var elementToBeModified = document.getElementById("logged_in_contents");
+            elementToBeModified.insertAdjacentHTML("afterbegin", "<form id='trip_to_be_changed'></form>");
+            var formElement = document.getElementById("trip_to_be_changed");
+            formElement.innerHTML = `
+                
+                <p id="trip_to_be_changed_id" style={"display":"none"}></p>
+                
+                <label for="origin">Origin:</label>
+                <input class="w3-input" type="text" name="origin" id="trip_to_be_changed_origin" disabled/>
+                <br />
+    
+                <label for="destination">Destination:</label>
+                <input class="w3-input" type="text" name="destination" id="trip_to_be_changed_destination" disabled/>
+                <br />
+    
+                <label for="departure_date">Departure Date:</label>
+                <input class="w3-input" type="date" name="departure_date" id="trip_to_be_changed_departure_date" />
+                <br />
+    
+                <label for="departure_time">Departure Time:</label>
+                <input class="w3-input" type="time" name="departure_time" id="trip_to_be_changed_departure_time" />
+    
+                <p>How many seats are available?</p>
+                <input class="w3-input" type="number" name="seats_available" id="trip_to_be_changed_seats_available"/>
+                <br />
+                
+                <button class="w3-button w3-green" type="submit" onclick="return saveTrip()">Save Changes</button>
+            `
+            makeHttpRequest("POST", "/read_trips/", {"trip_id": tripIdAsNum}, function(results) {
+                document.getElementById("trip_to_be_changed_origin").value = results["origin"];
+                document.getElementById("trip_to_be_changed_destination").value = results["destination"];
+                document.getElementById("trip_to_be_changed_departure_date").value = new Date(results["departure_date"]);
+                document.getElementById("trip_to_be_changed_departure_time").value = new Time(results["departure_time"]);
+                document.getElementById("seats_available").value = parseInt(results["seats_available"]);
+                document.getElementById("trip_to_be_changed_id").value = tripIdAsNum; 
+            });
+            
+            return false;
+        }
+        
+    </script>
+    
+    <script type="text/javascript">
+        function saveTrip() {
+            var form = document.getElementById("trip_to_be_changed");
+            var elements = form.elements;
+            var payload = {};
+            
+            for (var i = 0; i < elements.length; i++) {
+                payload[elements[i].name] = elements[i].value;
+            }
+            payload["trip_id"] = document.getElementById("trip_to_be_changed_id").value;
+            
+            makeHttpRequest("POST", "/update_trip/", payload, function(results) {
+                alert("Update successful. Please log back in for the changes to take effect. Sorry for the inconvenience; we're working on it!");
+                window.location = "/login";
+            });
+            
+            return false;
+        }
+    </script>
+    
     <script type="text/javascript">
         function loadUserDetails(userDetails) {
             // Replace the navbar links with acknowledgement of the user loggin in
@@ -135,29 +200,22 @@
             document.getElementById("login_navbar_link").style.display = "none";
             document.getElementById("navbar_contents").insertAdjacentHTML(
                 "beforeend",
-                "<span class='w3-bar-item w3-orange w3-right'> Logged in as " + userDetails["first_name"] + "</span>"
+                "<span class='w3-bar-item w3-orange w3-right'><strong>Logged in as " + userDetails["first_name"] + "</strong></span>"
             );
             
             var mainBody = document.getElementById("logged_in_contents");
-            // mainBody.innerHTML = "<p>These are your trips</p>";
-            // mainBody.insertAdjacentHTML("beforeend", "<div class='w3-responsive'> <table class='w3-table-all'> <tr>");
-            // mainBody.insertAdjacentHTML("beforeend", "<th>Trip ID</th><th>Origin</th><th>Destination</th><th>Date of Departure</th>");
-            // mainBody.insertAdjacentHTML("beforeend", "<th>Time of Departure</th><th>Num Seats Still Available</th></tr>");
-            // 
+            mainBody.innerHTML = `<p>These are your trips</p>
+            <div class='w3-responsive'> <table class='w3-table-all' id="user_owned_trips"> <tr>
+            <th>Trip ID</th><th>Origin</th><th>Destination</th><th>Date of Departure</th>
+            <th>Time of Departure</th><th>Num Seats Still Available</th><th>Edit</th></tr></table></div>`;
+
             var payload = {"trip_ids": userDetails["trips_owned"]}
-            // var string="<p>These are your trips</p>";
-            // string += "<div class='w3-responsive'> <table class='w3-table-all'> <tr>";
-            // string += "<th>Trip ID</th><th>Origin</th><th>Destination</th><th>Date of Departure</th>";
-            // string += "<th>Time of Departure</th><th>Num Seats Still Available</th></tr>"
             
             makeHttpRequest("POST", "/read_trips/", payload, function(results) {
+                var tableElement = document.getElementById("user_owned_trips");
                 for (let i = 0; i < results.length; i++) {
-                    mainBody.insertAdjacentHTML("beforeend", results[i]["as_a_table_row"]);
-                    // string += results[i]["as_a_table_row"];
+                    tableElement.insertAdjacentHTML("beforeend", results[i]["as_a_table_row"]);
                 }
-                // string += "</table></div>";
-                // mainBody.innerHTML = string;
-                mainBody.insertAdjacentHTML("beforeend", "</table></div>");
             });
             
             return false;
