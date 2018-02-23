@@ -90,14 +90,14 @@ def register_new_users():
                 "registration_message": "Unsuccessful registration. Please try again after a few minutes."
             })
             
-@app.route('/login/', methods=["GET"])
+@app.route('/login/', methods=["GET", "POST"])
 def handle_login():
     if request.method == "GET":
         return render_template("login.html")
     
     elif request.method == "POST":
         payload = request.get_json()
-        account = tiger_rides.read({
+        account = user_actions.get_user({
             "email_address": payload["email_address"],
             "password": payload["password"]
         })
@@ -112,7 +112,7 @@ def handle_login():
             results = {}
             results["first_name"] = account["first_name"]
             results["trips_owned"] = account["trips_owned"]
-            result["trips_joined"] = account["trips_owned"]
+            results["trips_joined"] = account["trips_owned"]
             return jsonify({
                 "login_successful": True,
                 "login_payload": results
@@ -124,9 +124,11 @@ def read_trips():
         try:
             trip_ids = request.get_json()["trip_ids"]
             relevant_trips = trip_actions.get_trips(trip_ids)
+            print("POST /read_trips/: Returned", len(relevant_trips), "trips")
             return jsonify(relevant_trips)
              
-        except KeyError:
+        except KeyError as e:
+            print("POST /read_trips/", repr(e))
             return {}
 
 #_______________________________________________________________________________

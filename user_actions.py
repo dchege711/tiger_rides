@@ -22,12 +22,15 @@ def get_trips(user_id):
     
     return trips
 
+def get_user(key_val_pairs):
+    return user_db.read(key_val_pairs)
+
 def register_user(user_details):
     new_user_id = user_db.get_next_id()
     user_details["user_id"] = new_user_id
     
     trip_info_in_registration = [
-        "origin", "departure_date", "departure_time", "seats_available"
+        "origin", "departure_date", "departure_time", "seats_available", "destination"
     ]
     trip_info = {}
     for key in trip_info_in_registration:

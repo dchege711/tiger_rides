@@ -23,31 +23,6 @@
             background-image: url({{ url_for('static', filename='img/nassau_hall.jpg') }});            
         }
         
-        input[type=text], select {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        input[type=submit] {
-            width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type=submit]:hover {
-            background-color: #45a049;
-        }
-        
         form {
             border-radius: 5px;
             padding: 20px;
@@ -97,11 +72,11 @@
                                 
                 <form id="login_form">
                     
-                    <label for="email_address"> Email: </label><input type="text" name ="email_address" required/>
+                    <label for="email_address"> Email: </label><input class="w3-input" type="text" name ="email_address" required/>
                     <br /></br />
-                    <label for="password"> Password: </label><input type="password" name="password" minlength="8" required/>
-                
-                    <button type="submit" onclick="return logInMember()">Log In</button>
+                    <label for="password"> Password: </label><input class="w3-input" type="password" name="password" minlength="8" required/>
+                    <br /><br />
+                    <button class="w3-button w3-center w3-green" type="submit" onclick="return logInMember()">Log In</button>
                     
                 </form>
                 
@@ -126,7 +101,7 @@
     
     <!-- End of Footer -->
 
-    <script>
+    <script type="text/javascript">
     function toggleMenuOnSmallScreens() {
         var x = document.getElementById("navDemo");
         if (x.className.indexOf("w3-show") == -1) {
@@ -137,8 +112,60 @@
     }
     </script>
     
+    <script type="text/javascript">
+        function makeHttpRequest(method, url, payload, callBack) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    callBack(JSON.parse(this.responseText));
+                }
+            }
+            xhttp.open(method, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify(payload));
+            
+            return false;
+        }
+    </script>
+    
+    <script type="text/javascript">
+        function loadUserDetails(userDetails) {
+            // Replace the navbar links with acknowledgement of the user loggin in
+            document.getElementById("register_navbar_link").style.display = "none";
+            document.getElementById("login_navbar_link").style.display = "none";
+            document.getElementById("navbar_contents").insertAdjacentHTML(
+                "beforeend",
+                "<span class='w3-bar-item w3-orange w3-right'> Logged in as " + userDetails["first_name"] + "</span>"
+            );
+            
+            var mainBody = document.getElementById("logged_in_contents");
+            // mainBody.innerHTML = "<p>These are your trips</p>";
+            // mainBody.insertAdjacentHTML("beforeend", "<div class='w3-responsive'> <table class='w3-table-all'> <tr>");
+            // mainBody.insertAdjacentHTML("beforeend", "<th>Trip ID</th><th>Origin</th><th>Destination</th><th>Date of Departure</th>");
+            // mainBody.insertAdjacentHTML("beforeend", "<th>Time of Departure</th><th>Num Seats Still Available</th></tr>");
+            // 
+            var payload = {"trip_ids": userDetails["trips_owned"]}
+            // var string="<p>These are your trips</p>";
+            // string += "<div class='w3-responsive'> <table class='w3-table-all'> <tr>";
+            // string += "<th>Trip ID</th><th>Origin</th><th>Destination</th><th>Date of Departure</th>";
+            // string += "<th>Time of Departure</th><th>Num Seats Still Available</th></tr>"
+            
+            makeHttpRequest("POST", "/read_trips/", payload, function(results) {
+                for (let i = 0; i < results.length; i++) {
+                    mainBody.insertAdjacentHTML("beforeend", results[i]["as_a_table_row"]);
+                    // string += results[i]["as_a_table_row"];
+                }
+                // string += "</table></div>";
+                // mainBody.innerHTML = string;
+                mainBody.insertAdjacentHTML("beforeend", "</table></div>");
+            });
+            
+            return false;
+        }
+    </script>
+    
     <!-- Process the login -->
-    <script>
+    <script type="text/javascript">
         function logInMember() {
             var form = document.getElementById("login_form");
             if (form.reportValidity() === false) {
@@ -165,55 +192,11 @@
                 }
             
             }
-            xhttp.open("POST", "/register/", true);
+            xhttp.open("POST", "/login/", true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhttp.send(JSON.stringify(payload));
             
-            // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
             return false;
-        }
-    </script>
-    
-    <script>
-        function loadUserDetails(userDetails) {
-            // Replace the navbar links with acknowledgement of the user loggin in
-            document.getElementById("register_navbar_link").style.display = "none";
-            document.getElementById("login_navbar_link").style.display = "none";
-            document.getElementById("navbar_contents").insertAdjacentHTML(
-                "beforeend",
-                "<p class='w3-bar-item w3-padding-16 w3-black w3-right' id='salutation_navbar'>" + userDetails["first_name"] +"</p>"
-            );
-            
-            var mainBody = document.getElementById("logged_in_contents");
-            mainBody.innerHTML = "<p>These are your trips</p>";
-            mainBody.innerHTML += "<div class='w3-responsive'><table class='w3-table-all'><tr>"
-            mainBody.innerHTML += "<th>Trip ID</th><th>Origin</th><th>Destination</th><th>Date of Departure</th>"
-            mainBody.innerHTML += "<th>Time of Departure</th><th>Num Seats Still Available</th></tr>"
-            
-            var payload = {"trip_ids": userDetails["trips_owned"]}
-            
-            makeHttpRequest("POST", "/read_trips/", payload, function(results) {
-                for (int i = 0; i < results.length; i++) {
-                    mainBody.insertAdjacentHTML("beforeend", results[i]["html_version"])
-                }
-            });
-            mainBody.insertAdjacentHTML("beforeend", "</table></div>")
-            
-            return false;
-        }
-    </script>
-    
-    <script>
-        function makeHttpRequest(method, url, payload, callBack) {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    callBack(JSON.parse(this.responseText));
-                }
-            }
-            xhttp.open(method, url, true);
-            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhttp.send(JSON.stringify(payload));
         }
     </script>
 
