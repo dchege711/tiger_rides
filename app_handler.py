@@ -14,6 +14,7 @@ from pprint import pprint
 import filter_trips
 from mongo_db_client import tiger_rides_db
 import user_actions
+import trip_actions
 
 app = Flask(__name__)
 CORS(app)   # This allows Cross-Origin-Resource-Sharing on all methods
@@ -97,8 +98,8 @@ def handle_login():
     elif request.method == "POST":
         payload = request.get_json()
         account = tiger_rides.read({
-            "Email": payload["Email"],
-            "Pass": payload["Pass"]
+            "email_address": payload["email_address"],
+            "password": payload["password"]
         })
         
         if account is None:
@@ -109,15 +110,24 @@ def handle_login():
             
         else:
             results = {}
-            results["fName"] = account["fName"]
-            results["trips"] = []
-            for trip in account["trips"]:
-                results["trips"].append(trip)
+            results["first_name"] = account["first_name"]
+            results["trips_owned"] = account["trips_owned"]
+            result["trips_joined"] = account["trips_owned"]
             return jsonify({
                 "login_successful": True,
                 "login_payload": results
             })
             
+@app.route('/read_trips/', methods=["POST"])
+def read_trips():
+    if request.method == "POST":
+        try:
+            trip_ids = request.get_json()["trip_ids"]
+            relevant_trips = trip_actions.get_trips(trip_ids)
+            return jsonify(relevant_trips)
+             
+        except KeyError:
+            return {}
 
 #_______________________________________________________________________________
 

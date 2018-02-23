@@ -36,7 +36,7 @@ def register_user(user_details):
             trip_info[key] = value
     
     if len(trip_info) != 0:
-        trip_id = trip_actions.add_trip(trip_info)
+        trip_id = trip_actions.add_trip(trip_info)[1]
         user_details["trips_owned"] = [trip_id]
         
     user_details["trips_joined"] = []
