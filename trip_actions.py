@@ -9,11 +9,11 @@ def add_trip(trip_info):
     trip_info["html_version"] = _convert_trip_info_to_html_row(trip_info)
     
     insert_results = trips_db.create(trip_info)
-    user_actions.update_user(
-        {"user_id": trip_info["trip_owner"]}, 
-        {"trips_owned": new_trip_id},
-        append=True
-    )
+    new_user_info = {
+        "user_id": trip_info["trip_owner"],
+        "trips_owned": new_trip_id
+    }
+    user_actions.update_user_append(new_user_info)
     
     try:
         trip_internal_id = insert_results.inserted_id
