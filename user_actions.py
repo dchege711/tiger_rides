@@ -32,8 +32,6 @@ def update_user_append(user_info):
         user_info[key] = user[key]
         
     user_info["user_id"] = user_id 
-    print("User info after append...")
-    print(user_info)
     return update_user(user_info)
 
 def update_user(new_user_info):
