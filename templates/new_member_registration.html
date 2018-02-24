@@ -86,7 +86,7 @@
                     <br />
                     
                     <label for="email_address"> Email: </label>
-                    <input class="w3-input" type="text" name ="email_address" required/>
+                    <input class="w3-input" type="email" name ="email_address" required/>
                     <br />
                     
                     <label for="password"> Password: </label>
@@ -111,7 +111,7 @@
                     <input class="w3-input" type="time" name="departure_time" />
 
                     <p>If you have a car, how many seats can you offer?</p>
-                    <input class="w3-input" type="number" name="seats_available"/>
+                    <input class="w3-input" type="number" name="seats_available" min="0"/>
                     <br />
                 
                     <button class="w3-button w3-green" type="submit" onclick="return registerNewMember()">Register</button>
@@ -135,6 +135,7 @@
                     for (var i = 0; i < elements.length; i++) {
                         payload[elements[i].name] = elements[i].value;
                     }
+                    delete payload[""];
                     
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function() {
@@ -142,7 +143,7 @@
                             var results = JSON.parse(this.responseText);
                             if (results["registration_status"] == true) {
                                 alert("Successful registration. Now log in with your email address and password");
-                                window.location = "/";
+                                window.location = "/login";
                             } else {
                                 alert(results["registration_message"]);
                                 window.location = "/register";

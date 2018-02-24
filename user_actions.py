@@ -1,33 +1,58 @@
 from mongo_db_client import tiger_rides_db
 import trip_actions
 
-user_db = tiger_rides_db("attendee_details")
+users_db = tiger_rides_db("attendee_details")
 
 def is_in_db(key_val_pair):
-    if user_db.read(key_val_pair) is not None:
+    if users_db.read(key_val_pair) is not None:
         return True 
     else:
         return False
 
 def get_trips(user_id):
     
-    search_result = user_db.read({"user_id": user_id})
+    user_profile = users_db.read({"user_id": user_id})
     trips = {}
     
-    if search_result is None:
+    if user_profile is None:
         return trips
     
-    trips["trips_owned"] = search_result["trips_owned"]
-    trips["trips_joined"] = search_result["trips_joined"]
+    trips["trips_owned"] = user_profile["trips_owned"]
+    trips["trips_joined"] = user_profile["trips_joined"]
     
     return trips
 
+def update_user_append(user_info):
+    user_id = user_info.pop("user_id", None)
+    query = {"user_id": user_id}
+    user = users_db.read(query)
+    
+    for key in user_info:
+        user_info[key] = user[key].append(user_info[key])
+        
+    user_info["user_id"] = user_id 
+    return update_user(user_info)
+
+def update_user(new_user_info):
+    query = {"user_id": new_user_info["user_id"]}
+    update_results = {}
+    result = users_db.update(query, new_user_info)
+    if result.modified_count == 1:
+        update_results["user_info"] = new_user_info
+    else:
+        update_results["user_info"] = False
+            
+    return update_results    
+     
+
 def get_user(key_val_pairs):
-    return user_db.read(key_val_pairs)
+    return users_db.read(key_val_pairs)
 
 def register_user(user_details):
-    new_user_id = user_db.get_next_id()
+    new_user_id = users_db.get_next_id()
     user_details["user_id"] = new_user_id
+    user_details["trips_joined"] = []
+    insert_results = users_db.create(user_details)
     
     trip_info_in_registration = [
         "origin", "departure_date", "departure_time", "seats_available", "destination"
@@ -37,14 +62,10 @@ def register_user(user_details):
         value = user_details.pop(key, None)
         if value != "":
             trip_info[key] = value
-    
     if len(trip_info) != 0:
-        trip_id = trip_actions.add_trip(trip_info)[1]
-        user_details["trips_owned"] = [trip_id]
-        
-    user_details["trips_joined"] = []
+        trip_info["trip_owner"] = new_user_id
+        trip_actions.add_trip(trip_info)
     
-    insert_results = user_db.create(user_details)
     try:
         user_internal_id = insert_results.inserted_id
         return True, new_user_id 

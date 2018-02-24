@@ -39,9 +39,9 @@ class tiger_rides_db():
 	
 	def update(self, filter_key, key_value_pairs):
 		return self.collection.update_one(
-			filter_key,
-			{"$set": key_value_pairs}
+			filter_key, {"$set": key_value_pairs}
 		)
+			
 		
 	def get_next_id(self):
 		metadata = self.collection.find_one({"document_type": "metadata"})

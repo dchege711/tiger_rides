@@ -122,21 +122,44 @@ def handle_login():
 def read_trips():
     if request.method == "POST":
         try:
-            trip_ids = request.get_json()["trip_ids"]
+            payload = request.get_json()
+            print("Payload:")
+            print(payload)
+            
+            trip_ids = []
+            
+            if "trip_ids" in payload:
+                trip_ids = payload["trip_ids"]
+            
+            elif "user_id" in payload:
+                user_trips = user_actions.get_trips(payload["user_id"])
+                if payload["get_user_owned"]:
+                    trip_ids = user_trips["trips_owned"]
+                else:
+                    trip_ids = user_trips["trips_joined"]
+                    
             relevant_trips = trip_actions.get_trips(trip_ids)
-            print("POST /read_trips/: Returned", len(relevant_trips), "trips")
+            
+            print("Response:")
+            pprint(relevant_trips)
             return jsonify(relevant_trips)
              
         except KeyError as e:
-            print("POST /read_trips/", repr(e))
+            print("Error:")
+            print(e.message)
             return {}
         
 @app.route("/update_trip/", methods=["POST"])
 def update_trip():
     if request.method == "POST":
-        results = trip_actions.update_trip(request.get_json())
-        print("POST /update_trip/ returned:")
-        print(results)
+        payload = request.get_json()
+        print("Payload:")
+        pprint(payload)
+        
+        results = trip_actions.update_trip(payload)
+        
+        print("Response:")
+        pprint(results)
         return jsonify(results)
 
 #_______________________________________________________________________________

@@ -1,4 +1,5 @@
 from mongo_db_client import tiger_rides_db
+import user_actions
 
 trips_db = tiger_rides_db("trip_details")
 
@@ -8,12 +9,18 @@ def add_trip(trip_info):
     trip_info["html_version"] = _convert_trip_info_to_html_row(trip_info)
     
     insert_results = trips_db.create(trip_info)
+    user_actions.update_user(
+        {"user_id": trip_info["trip_owner"]}, 
+        {"trips_owned": new_trip_id},
+        append=True
+    )
+    
     try:
         trip_internal_id = insert_results.inserted_id
-        return True, new_trip_id 
+        return new_trip_id 
     except Exception as e:
         print(e)
-        return False, None
+        return None
     
 def _convert_trip_info_to_html_row(trip_info):
     return ''.join([
@@ -28,37 +35,56 @@ def _convert_trip_info_to_html_row(trip_info):
         ")'> <b><i class='fa fa-pencil fa-fw'></i></b></button></td><tr>"
     ])
     
-    
 def get_trips(trip_ids):
     relevant_trips = []
     for trip_id in trip_ids:
         trip = trips_db.read({"trip_id": trip_id})
         if trip is not None:
-            relevant_trips.append({
-                "trip_id": trip["trip_id"],
-                "as_a_table_row": trip["html_version"]
-            })
+            trip.pop("_id", None)
+            relevant_trips.append(trip)
     return relevant_trips
 
-def update_trip(new_trip_info):
-    query = {"trip_id": new_trip_info["trip_id"]}
+def update_trip_append(trip_info):
+    trip_id = trip_info.pop("trip_id", None)
+    query = {"trip_id": trip_id}
     trip = trips_db.read(query)
-    if trip is None:
-        result = add_trip(new_trip_info)
-    else:
-        result = trips_db.update(query, new_trip_info)
-    return results
+    
+    for key in trip_info:
+        trip_info[key] = trip[key].append(trip_info[key])
+        
+    trip_info["trip_id"] = trip_id 
+    return update_trip(trip_info)
+        
 
-def main():
+def update_trip(new_trip_info):
+    query = {"trip_id": new_trip_info["trip_id"]}    
+    trip_to_modify = trips_db.read(query)
+    for key in new_trip_info:
+        trip_to_modify[key] = new_trip_info[key]
+    trip_to_modify["html_version"] = _convert_trip_info_to_html_row(trip_to_modify)
+    
+    update_results = {}
+    result = trips_db.update(query, trip_to_modify)
+    
+    if result.modified_count == 1:
+        update_results["trip_info"] = new_trip_info
+    else:
+        update_results["trip_info"] = False
+            
+    return update_results
+
+def main():    
     test_trip = {
-        "origin": "Omaha",
-        "departure_date": "2018-02-24",
-        "departure_time": "12:20",
-        "seats_available": "2",
-        "destination": "Princeton University",
-        "trip_id": 2
+        'origin': 'Las Vegas', 
+        'destination': 'Princeton University', 
+        'departure_date': '2018-03-15', 
+        'departure_time': '14:00', 
+        'seats_available': '0', 
+        'trip_id': 4
     }
-    print(_convert_trip_info_to_html_row(test_trip))
+    # print(_convert_trip_info_to_html_row(test_trip))
+    test_trip["seats_available"] = 11
+    print(update_trip(test_trip))
 
 if __name__ == "__main__":
     main()
