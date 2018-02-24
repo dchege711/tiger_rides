@@ -54,6 +54,9 @@ class tiger_rides_db():
 		
 	def read(self, query):
 		return self.collection.find_one(filter=query)
+	
+	def delete(self, query_filter):
+		return self.collection.delete_one(query_filter)
 		
 def main():
 	tiger_rides = tiger_rides_db("attendee_details")

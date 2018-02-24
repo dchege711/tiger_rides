@@ -50,7 +50,8 @@ def update_trip_append(trip_info):
     trip = trips_db.read(query)
     
     for key in trip_info:
-        trip_info[key] = trip[key].append(trip_info[key])
+        trip[key].append(trip_info[key])
+        trip_info[key] = trip[key]
         
     trip_info["trip_id"] = trip_id 
     return update_trip(trip_info)
