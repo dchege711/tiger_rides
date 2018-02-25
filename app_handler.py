@@ -1,9 +1,3 @@
-"""
-Implements an API to access the healthKenya database
-Adding a line so that I can re-deploy. Heeeeroku!!!!!!
-How much information do we give provide? Everything since it's in public domain?
-"""
-
 #_______________________________________________________________________________
 
 from flask import Flask, jsonify, make_response, request, Response, render_template, send_file
