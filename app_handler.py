@@ -1,13 +1,5 @@
-"""
-Implements an API to access the healthKenya database
-Adding a line so that I can re-deploy. Heeeeroku!!!!!!
-How much information do we give provide? Everything since it's in public domain?
-"""
-
-#_______________________________________________________________________________
-
-from flask import Flask, jsonify, make_response, request, Response, render_template, send_file
-from flask_cors import CORS, cross_origin
+from flask import Flask, jsonify, make_response, request, render_template, send_file
+from flask_cors import CORS
 import os
 from pprint import pprint
 
@@ -17,20 +9,48 @@ import user_actions
 import trip_actions
 
 app = Flask(__name__)
-CORS(app)   # This allows Cross-Origin-Resource-Sharing on all methods
+CORS(app)   # Allow Cross-Origin-Resource-Sharing on all methods
+
+# app_files = {
+#     # "logo_cropped.png": send_file("./static/img/logo/logo_cropped.png", mimetype="image/png"),
+#     "navigation.html": render_template("navigation.html")
+# }
 
 #_______________________________________________________________________________
 
 @app.route('/')
 def index():
     """
-    URLs directed to the homepage will land here
+    This is our home page.
+    
     """
-    # return "Working on the REST API!"
     return render_template("index.html")
 
-@app.route('/search/', methods=['POST', 'GET'])
+@app.route('/static/img/logo/logo_cropped.png', methods=["GET"])
+def get_logo():
+    """
+    Returns the Tiger Rides logo. I'm planning on deprecating this and using the 
+    app_files dictionary in an app.route() that catches all mismatches.
+    
+    """
+    return send_file("./static/img/logo/logo_cropped.png", mimetype="image/png")
+
+@app.route('/navigation.html')
+def return_navbar():
+    """
+    Returns the Navigation Bar. I'm planning on deprecating this and using the 
+    app_files dictionary in an app.route() that catches all mismatches.
+    
+    """
+    return render_template("navigation.html")
+
+@app.route('/search/', methods=['POST'])
 def search_trips():
+    """
+    Searching for trips on the /search/ url returns all the trips being made.
+    There's no need for password authentication for this (yet?)
+    
+    """
     if request.method == 'POST':
         state = request.get_json()["origin_state"]        
         list_of_attendees = filter_trips.get_travellers_from_state(state)
@@ -48,15 +68,12 @@ def search_trips():
         results_in_html = "".join([results_in_html, "</table></div>"])
         
         return jsonify(results_in_html)
-    
-    elif request.method == 'GET':
-        return "OK", 200
-    
-@app.route('/static/img/logo/logo_cropped.png', methods=["GET"])
-def get_logo():
-    return send_file("./static/img/logo/logo_cropped.png", mimetype="image/png")
 
 def tiger_cards(attendee_details):
+    """
+    Create a pretty row for a html table that will contain the trips being made.
+    
+    """
     return ''.join([
         "<tr><td>", attendee_details["name"], "</td>",
         "<td>", attendee_details["size"], "</td>",
@@ -67,8 +84,19 @@ def tiger_cards(attendee_details):
 @app.route('/register/', methods=["POST", "GET"])
 def register_new_users():
     if request.method == "GET":
+        """
+        Show the page necessary for a user to register for Tiger Rides.
+        
+        """
         return render_template("new_member_registration.html")
+    
+    
     elif request.method == "POST":
+        """
+        Process the information that was entered on the registration form.
+        Return whether the reigstration was successful or not.
+        
+        """
         payload = request.get_json()
         
         found_duplicate = user_actions.is_in_db({"email_address": payload["email_address"]})
@@ -93,9 +121,20 @@ def register_new_users():
 @app.route('/login/', methods=["GET", "POST"])
 def handle_login():
     if request.method == "GET":
+        """
+        Display the login form for registered members.
+        
+        """
         return render_template("login.html")
     
     elif request.method == "POST":
+        """
+        Process a login request. 
+        Deny authentication for users that submit wrong passwords.
+        Otherwise, return the user's first name and their trips.
+        
+        """
+        
         payload = request.get_json()
         account = user_actions.get_user({
             "email_address": payload["email_address"],
@@ -105,17 +144,17 @@ def handle_login():
         if account is None:
             return jsonify({
                 "login_successful": False,
-                "login_payload": "Incorrect password or email. Did you want to <a href='\register'>register</a>?"
+                "login_payload": "Incorrect email or password"
             })
             
         else:
-            results = {}
-            results["first_name"] = account["first_name"]
-            results["trips_owned"] = account["trips_owned"]
-            results["trips_joined"] = account["trips_owned"]
             return jsonify({
                 "login_successful": True,
-                "login_payload": results
+                "login_payload": {
+                    "first_name": account["first_name"],
+                    "trips_owned": account["trips_owned"],
+                    "trips_joined": account["trips_owned"]
+                }
             })
             
 @app.route('/read_trips/', methods=["POST"])
@@ -164,14 +203,9 @@ def update_trip():
 
 #_______________________________________________________________________________
 
-@app.route('/navigation.html')
-def return_navbar():
-    return render_template("navigation.html")
-
 @app.errorhandler(404)
 def notFoundError(error):
-    # This probably isn't API friendly, but ¯\_(ツ)_/¯
-    return make_response("Oh no... Page Not Found (︶︹︺)", 404)
+    return "Page Not Found (︶︹︺)", 404
 
 #_______________________________________________________________________________
 

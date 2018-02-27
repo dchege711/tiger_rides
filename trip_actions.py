@@ -4,6 +4,18 @@ import user_actions
 trips_db = tiger_rides_db("trip_details")
 
 def add_trip(trip_info):
+    """
+    Add a trip to the database of trips.
+
+    param(s):
+    trip_info (dict)    Expected keys: origin, destination, 
+                        departure_time, seats_available
+
+    return(s):
+    (int) The id of the the inserted trip, or NoneType if the 
+    trip wasn't successfully inserted into the database.
+
+    """
     new_trip_id = trips_db.get_next_id()
     trip_info["trip_id"] = new_trip_id
     trip_info["html_version"] = _convert_trip_info_to_html_row(trip_info)
@@ -15,14 +27,15 @@ def add_trip(trip_info):
     }
     user_actions.update_user_append(new_user_info)
     
-    try:
-        trip_internal_id = insert_results.inserted_id
-        return new_trip_id 
-    except Exception as e:
-        print(e)
+    if insert_results.inserted_id is not None:
+        return new_trip_id
+    else:
         return None
     
 def _convert_trip_info_to_html_row(trip_info):
+    """
+
+    """
     return ''.join([
         "<tr><td>#", str(trip_info["trip_id"]), "</td>",
         "<td>", trip_info["origin"], "</td>",
