@@ -24,7 +24,9 @@ indexes = {
 class tiger_rides_db():
 	
 	def __init__(self, collection_name):
-		self.client = MongoClient(os.environ["TIGER_RIDES_MONGO_URI"])
+		self.client = MongoClient(
+			os.environ["TIGER_RIDES_MONGO_URI"]
+		)
 		self.db = self.client["dgitau_orf401"]
 		self.collection_name = collection_name
 		self.collection = self.db[collection_name]
