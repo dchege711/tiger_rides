@@ -2,12 +2,12 @@ from flask import Flask, jsonify, make_response, request, render_template, send_
 from flask_cors import CORS
 import os
 from pprint import pprint
-
 import filter_trips
 from mongo_db_client import tiger_rides_db
 import user_actions
 import trip_actions
-
+import sample_send
+import smtplib
 app = Flask(__name__)
 CORS(app)   # Allow Cross-Origin-Resource-Sharing on all methods
 
@@ -22,25 +22,24 @@ CORS(app)   # Allow Cross-Origin-Resource-Sharing on all methods
 def index():
     """
     This is our home page.
-    
     """
     return render_template("index.html")
 
 @app.route('/static/img/logo/logo_cropped.png', methods=["GET"])
 def get_logo():
     """
-    Returns the Tiger Rides logo. I'm planning on deprecating this and using the 
+    Returns the Tiger Rides logo. I'm planning on deprecating this and using the
     app_files dictionary in an app.route() that catches all mismatches.
-    
+
     """
     return send_file("./static/img/logo/logo_cropped.png", mimetype="image/png")
 
 @app.route('/navigation.html')
 def return_navbar():
     """
-    Returns the Navigation Bar. I'm planning on deprecating this and using the 
+    Returns the Navigation Bar. I'm planning on deprecating this and using the
     app_files dictionary in an app.route() that catches all mismatches.
-    
+
     """
     return render_template("navigation.html")
 
@@ -49,12 +48,12 @@ def search_trips():
     """
     Searching for trips on the /search/ url returns all the trips being made.
     There's no need for password authentication for this (yet?)
-    
+
     """
     if request.method == 'POST':
-        state = request.get_json()["origin_state"]        
+        state = request.get_json()["origin_state"]
         list_of_attendees = filter_trips.get_travellers_from_state(state)
-                
+
         results_in_html = """
         <div class='w3-responsive'><table class='w3-table-all'>
             <tr>
@@ -64,15 +63,14 @@ def search_trips():
         """
         for result in list_of_attendees:
             results_in_html = "".join([results_in_html, tiger_cards(result)])
-            
+
         results_in_html = "".join([results_in_html, "</table></div>"])
-        
+
         return jsonify(results_in_html)
 
 def tiger_cards(attendee_details):
     """
     Create a pretty row for a html table that will contain the trips being made.
-    
     """
     return ''.join([
         "<tr><td>", attendee_details["name"], "</td>",
@@ -95,52 +93,54 @@ def register_new_users():
         """
         Process the information that was entered on the registration form.
         Return whether the reigstration was successful or not.
-        
+
         """
         payload = request.get_json()
-        
+
         found_duplicate = user_actions.is_in_db({"email_address": payload["email_address"]})
         if (found_duplicate):
             return jsonify({
                 "registration_status": False,
                 "registration_message": "That email address has already been taken."
             })
-        
+
         successfully_registered_user = user_actions.register_user(payload)[0]
         if successfully_registered_user:
-            return jsonify({
-                "registration_status": True,
-                "registration_message": "Successful registration. Now log in with your email address and password"
-            })
+            return (jsonify({
+                            "registration_status": True,
+
+                            "registration_message": "Successful registration. Please check your email for a confirmation message."
+                        }))
+
         else:
             return jsonify({
                 "registration_status": False,
                 "registration_message": "Unsuccessful registration. Please try again after a few minutes."
             })
-            
+
+
 @app.route('/login/', methods=["GET", "POST"])
 def handle_login():
     if request.method == "GET":
         """
         Display the login form for registered members.
-        
+
         """
         return render_template("login.html")
-    
+
     elif request.method == "POST":
         """
-        Process a login request. 
+        Process a login request.
         Deny authentication for users that submit wrong passwords.
         Otherwise, return the user's first name and their trips.
-        
+
         """
-        
+
         payload = request.get_json()
         account = user_actions.get_user({
             "email_address": payload["email_address"],
             "password": payload["password"]
         })
-        
         if account is None:
             return jsonify({
                 "login_successful": False,
