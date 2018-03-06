@@ -1,4 +1,5 @@
 import smtplib
+import os
 # Import the email modules we'll need
 from email.message import Message
 email_address = 'komrons@princeton.edu'
@@ -22,4 +23,4 @@ def sample_send(me, you,
 sample_send(me    = 'tiger.rides123@gmail.com',
               you = 'komrons@princeton.edu',
               login        = 'tiger.rides123',
-              password     = 'tiger.rides123')
+              password     = os.environ["TIGER_RIDES_EMAIL_PASSWORD"])
