@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="./static/ProcessForm.js"></script>
     <title>Tiger Rides</title>
     <style>
         body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
@@ -74,30 +75,30 @@
                 
                 <h5>Glad to have you join us!<br></h5>
                                 
-                <form id="registration_form">
+                <form id="registration_form" onsubmit="return registerNewMember('registration_form')">
                     
                     <p><strong>Please fill out the following fields:</strong></p>
                     
                     <label for="first_name"> First Name:</label>
-                    <input class="w3-input" type="text" name="first_name" required/>
+                    <input class="w3-input" type="text" name="first_name" value="Chege2"/>
                     <br />
                     
                     <label for="last_name"> Last Name: </label>
-                    <input class="w3-input" type="text" name="last_name"required/>
+                    <input class="w3-input" type="text" name="last_name" value="Gitau2"/>
                     <br />
                     
                     <label for="email_address"> Email: </label>
-                    <input class="w3-input" type="email" name ="email_address" required/>
+                    <input class="w3-input" type="email" name ="email_address" value="dchege7111@gmail.com"/>
                     <br />
                     
                     <label for="password"> Password: </label>
-                    <input class="w3-input" type="password" name="password" minlength="8" required/>
+                    <input class="w3-input" type="password" name="password" minlength="8" value="nothingreallymatters"/>
                     <br />
 
                     <p><strong>Please enter your trip information:</strong></p>
                     
                     <label for="origin">Origin:</label>
-                    <input class="w3-input" type="text" name="origin" />
+                    <input class="w3-input" type="text" name="origin" value="Tennessee"/>
                     <br />
                     
                     <label for="destination">Destination:</label>
@@ -105,34 +106,38 @@
                     <br />
                     
                     <label for="departure_date">Departure Date:</label>
-                    <input class="w3-input" type="date" name="departure_date" />
+                    <input class="w3-input" type="date" name="departure_date" value="2018-12-12"/>
                     <br />
                     
                     <label for="departure_time">Departure Time:</label>
-                    <input class="w3-input" type="time" name="departure_time" />
+                    <input class="w3-input" type="time" name="departure_time" value="11:32"/>
 
                     <p>If you have a car, how many seats can you offer?</p>
-                    <input class="w3-input" type="number" name="seats_available" min="0"/>
+                    <input class="w3-input" type="number" name="seats_available" min="0" value="3"/>
                     <br />
                 
-                    <button class="w3-button w3-green" type="submit" onclick="return registerNewMember()">Register</button>
+                    <button class="w3-button w3-green" type="submit">Register</button>
                     
                 </form>
                 
             </div>
             
-            <!-- Process the search query -->
-            <script>
+            
+
+            <!-- <script>
                 function registerNewMember() {
-                    var form = document.getElementById("registration_form");
-                    if (form.reportValidity() === false) {
-                        alert("Please fill out the required fields");
-                        return;
+                    var elements = document.getElementById("registration_form").elements;
+                    
+                    // Ensure that all fields have been filled
+                    console.log(typeof(elements));
+                    for (var key in elements) {
+                        console.log(elements[key]);
                     }
                     
-                    var elements = form.elements;
+                    /*
                     var payload = {};
                     
+                     
                     for (var i = 0; i < elements.length; i++) {
                         payload[elements[i].name] = elements[i].value;
                     }
@@ -155,11 +160,13 @@
                     xhttp.open("POST", "/register/", true);
                     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhttp.send(JSON.stringify(payload));
+
+                    */
                     
                     // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
                     return false;
                 }
-            </script>
+            </script> -->
         </div>
         
         <!-- End of Second Grid-->
