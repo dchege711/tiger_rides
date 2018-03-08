@@ -51,9 +51,34 @@ def get_user(key_val_pairs):
     return users_db.read(key_val_pairs)
 
 def delete_user(user_id):
-    return users_db.delete({"user_id": user_id})
+    """
+    Delete a user's account from the Tiger Rides database.
+
+    Args:
+
+        `user_id` :(int):: The id of the user
+
+    Returns:
+
+        :int: 1 if user's account was successfully deleted
+    """
+    return users_db.delete({"user_id": user_id}).deleted_count
 
 def register_user(user_details):
+    """
+    Register a new user into Tiger Rides.
+
+    Args:
+
+        `user_details` :(JSON):: Expected keys are `first_name, last_name, email_address, password`.
+
+    Returns:
+
+        :bool:: True if the registration was successful, false otherwise.
+
+        :int:: The user's ID if registration was successful, false otherwise.
+
+    """
     new_user_id = users_db.get_next_id()
     user_details["user_id"] = new_user_id
     user_details["trips_joined"] = []
@@ -68,7 +93,7 @@ def register_user(user_details):
         value = user_details.pop(key, None)
         if value != "":
             trip_info[key] = value
-    if len(trip_info) != 0:
+    if len(trip_info) == 5:
         trip_info["trip_owner"] = new_user_id
         trip_actions.add_trip(trip_info)
     
