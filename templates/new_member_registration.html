@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- <script src="./static/ProcessForm.js"></script> -->
+    <script src="./static/ProcessForm.js"></script>
     <title>Tiger Rides</title>
     <style>
         body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
@@ -75,7 +75,7 @@
                 
                 <h5>Glad to have you join us!<br></h5>
                                 
-                <form id="registration_form" method="post" onsubmit="return registerNewMember('registration_form')">
+                <form id="registration_form" method="post" onsubmit="return processForm('registration_form', '/register')">
                     
                     <p><strong>Please fill out the following fields:</strong></p>
                     
@@ -122,7 +122,7 @@
                 
             </div>
             
-            <script>
+            <!-- <script>
                 function registerNewMember(formID) {
                     var elements = document.getElementById(formID).elements;
                     var missingElements = new Set();
@@ -187,7 +187,7 @@
                     // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
                     return false;
                 }
-            </script>
+            </script> -->
 
         </div>
         
