@@ -1,9 +1,19 @@
-function registerNewMember(formName) {
-    var elements = document.getElementById(formName).elements;
+console.log("Load #1");
 
-    // Ensure that all fields have been filled
-    console.log(typeof (elements));
-    for (var key in elements) {
-        console.log(elements[key]);
-    }
+function registerNewMember(formID) {
+    var elements = document.getElementById(formID).elements;
+    var missingElements = new Set();
+    var requiredElements = ["first_name", "last_name", "email_address", "password"]
+    
+    requiredElements.forEach(function(name) {
+        if (elements[name].value.strip() === "") {
+            missingElements.add(name);
+        }
+    });
+
+    console.log(missingElements);
+
+    missingElements.forEach(function(elementName) {
+        
+    });
 }

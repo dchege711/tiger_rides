@@ -20,7 +20,7 @@ def sample_send(me, you,
     problems = server.sendmail(me, you, msg.as_string())
     server.quit()
 
-sample_send(me    = 'tiger.rides123@gmail.com',
-              you = 'komrons@princeton.edu',
-              login        = 'tiger.rides123',
-              password     = os.environ["TIGER_RIDES_EMAIL_PASSWORD"])
+# sample_send(me    = 'tiger.rides123@gmail.com',
+#               you = 'komrons@princeton.edu',
+#               login        = 'tiger.rides123',
+#               password     = os.environ["TIGER_RIDES_EMAIL_PASSWORD"])

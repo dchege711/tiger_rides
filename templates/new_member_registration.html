@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="./static/ProcessForm.js"></script>
+    <!-- <script src="./static/ProcessForm.js"></script> -->
     <title>Tiger Rides</title>
     <style>
         body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
@@ -75,24 +75,24 @@
                 
                 <h5>Glad to have you join us!<br></h5>
                                 
-                <form id="registration_form" onsubmit="return registerNewMember('registration_form')">
+                <form id="registration_form" method="post" onsubmit="return registerNewMember('registration_form')">
                     
                     <p><strong>Please fill out the following fields:</strong></p>
                     
-                    <label for="first_name"> First Name:</label>
-                    <input class="w3-input" type="text" name="first_name" value="Chege2"/>
+                    <label for="first_name"> First Name (Required):</label>
+                    <input class="w3-input" type="text" name="first_name" id="first_name" value="Malcolm X"/>
                     <br />
                     
-                    <label for="last_name"> Last Name: </label>
-                    <input class="w3-input" type="text" name="last_name" value="Gitau2"/>
+                    <label for="last_name"> Last Name (Required): </label>
+                    <input class="w3-input" type="text" name="last_name" id="last_name" value="Jr"/>
                     <br />
                     
-                    <label for="email_address"> Email: </label>
-                    <input class="w3-input" type="email" name ="email_address" value="dchege7111@gmail.com"/>
+                    <label for="email_address"> Email (Required): </label>
+                    <input class="w3-input" type="text" name ="email_address" id="email_address" value="dchege7111@gmail.com"/>
                     <br />
                     
-                    <label for="password"> Password: </label>
-                    <input class="w3-input" type="password" name="password" minlength="8" value="nothingreallymatters"/>
+                    <label for="password"> Password (Required): </label>
+                    <input class="w3-input" type="password" name="password" id="password" minlength="8" value="nothingreallymatters"/>
                     <br />
 
                     <p><strong>Please enter your trip information:</strong></p>
@@ -122,51 +122,73 @@
                 
             </div>
             
-            
+            <script>
+                function registerNewMember(formID) {
+                    var elements = document.getElementById(formID).elements;
+                    var missingElements = new Set();
+                    var requiredElements = ["first_name", "last_name", "email_address", "password"]
 
-            <!-- <script>
-                function registerNewMember() {
-                    var elements = document.getElementById("registration_form").elements;
-                    
-                    // Ensure that all fields have been filled
-                    console.log(typeof(elements));
-                    for (var key in elements) {
-                        console.log(elements[key]);
-                    }
-                    
-                    /*
-                    var payload = {};
-                    
-                     
-                    for (var i = 0; i < elements.length; i++) {
-                        payload[elements[i].name] = elements[i].value;
-                    }
-                    delete payload[""];
-                    
-                    var xhttp = new XMLHttpRequest();
-                    xhttp.onreadystatechange = function() {
-                        if (this.readyState == 4 && this.status == 200) {
-                            var results = JSON.parse(this.responseText);
-                            if (results["registration_status"] == true) {
-                                alert("Successful registration. Now log in with your email address and password");
-                                window.location = "/login";
-                            } else {
-                                alert(results["registration_message"]);
-                                // window.location = "/register";
-                            }
+                    requiredElements.forEach(function (name) {
+                        if (elements[name].value.trim() === "") {
+                            missingElements.add(name);
                         }
+                    });
+
+                    if (missingElements.size >= 1) {
+                        missingElements.forEach(function (elementName) {
+                            document.getElementById(elementName).style.border = "thin solid red";
+                        });
+
+                        alert("Please fill in the required fields.");
+                        return false;
+                    } else {
+                        // REGEX obtained from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Validation
+                        var emailRegex = /[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/;
+                        var emailIsValid = emailRegex.exec(elements["email_address"].value);
+                        console.log(emailIsValid);
+
+                        if (!emailIsValid) {
+                            alert(elements["email_address"].value + " is not a valid email address...");
+                            document.getElementById("email_address").style.border = "thin solid red";
+                            return false;
+                        } else {
+
+                            var payload = {};
+                            for (var i = 0; i < elements.length; i++) {
+                                payload[elements[i].name] = elements[i].value;
+                            }
+                            delete payload[""];
+
+                            sendHTTPRequest("POST", "/register", payload, function(results) {
+                                if (results["registration_status"] == true) {
+                                    alert("Successful registration. Now log in with your email address and password");
+                                    window.location = "/login";
+                                } else {
+                                    alert(results["registration_message"]);
+                                } 
+                            });
+                        }
+                    }
                     
+                }
+
+                function sendHTTPRequest(method, url, payload, callBack) {
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            callBack(JSON.parse(this.responseText));
+                        }
+
                     }
                     xhttp.open("POST", "/register/", true);
                     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhttp.send(JSON.stringify(payload));
 
-                    */
-                    
                     // https://stackoverflow.com/questions/7393484/xmlhttprequest-asynchronous-not-working-always-returns-status-0
                     return false;
                 }
-            </script> -->
+            </script>
+
         </div>
         
         <!-- End of Second Grid-->
