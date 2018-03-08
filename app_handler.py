@@ -100,22 +100,21 @@ def register_new_users():
         found_duplicate = user_actions.is_in_db({"email_address": payload["email_address"]})
         if (found_duplicate):
             return jsonify({
-                "registration_status": False,
-                "registration_message": "That email address has already been taken."
+                "success": False,
+                "message": "That email address has already been taken."
             })
 
         successfully_registered_user = user_actions.register_user(payload)[0]
         if successfully_registered_user:
             return (jsonify({
-                            "registration_status": True,
-
-                            "registration_message": "Successful registration. Please check your email for a confirmation message."
+                            "success": True,
+                            "message": "Successful registration. Now log in with your email address and password."
                         }))
 
         else:
             return jsonify({
-                "registration_status": False,
-                "registration_message": "Unsuccessful registration. Please try again after a few minutes."
+                "success": False,
+                "message": "Unsuccessful registration. Please try again after a few minutes."
             })
 
 
@@ -210,6 +209,6 @@ def notFoundError(error):
 #_______________________________________________________________________________
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
+    app.run()
 
 #_______________________________________________________________________________

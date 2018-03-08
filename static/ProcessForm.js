@@ -8,9 +8,9 @@ var requiredFields = {
  * 
  * @param {string} formID The document id of the form element
  * @param {string} url The url to which the form data should be sent
- * @param {function} callBack The function to be called on success
+ * @param {function} callBack The function to be called on success, takes the response as its parameter.
  */
-function processForm(formID, url) {
+function processForm(formID, url, callBack) {
     var elements = document.getElementById(formID).elements;
     var missingElements = checkRequired(elements, formID);
 
@@ -18,36 +18,39 @@ function processForm(formID, url) {
         missingElements.forEach(function (elementName) {
             document.getElementById(elementName).style.border = "thin solid red";
         });
-        alert("Please fill in the required fields.");
+
+        callBack({
+            "success": false,
+            "message": "Please fill in the required fields."
+        })
         return false;
     } else {
 
-        // REGEX obtained from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Validation
-        var emailRegex = /[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/;
-        var emailIsValid = emailRegex.exec(elements["email_address"].value);
-        console.log(emailIsValid);
+        // Validate the email address if it is one of the fields
+        if (elements["email_address"] !== undefined || elements["email_address"] !== null) {
 
-        if (!emailIsValid) {
-            alert(elements["email_address"].value + " is not a valid email address...");
-            document.getElementById("email_address").style.border = "thin solid red";
-            return false;
-        } else {
+            // REGEX obtained from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Validation
+            var emailRegex = /[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/;
+            var emailIsValid = emailRegex.exec(elements["email_address"].value);
 
-            var payload = {};
-            for (var i = 0; i < elements.length; i++) {
-                payload[elements[i].name] = elements[i].value;
+            if (!emailIsValid) {
+                document.getElementById("email_address").style.border = "thin solid red";
+                callBack({
+                    "success": false,
+                    "message": elements["email_address"].value + " is not a valid email address."
+                })
+                return false;
             }
-            delete payload[""];
-
-            sendHTTPRequest("POST", url, payload, function (results) {
-                if (results["registration_status"] == true) {
-                    alert("Successful registration. Now log in with your email address and password");
-                    window.location = "/login";
-                } else {
-                    alert(results["registration_message"]);
-                }
-            });
         }
+
+        // Send the form to the server for further processing.
+        var payload = {};
+        for (var i = 0; i < elements.length; i++) {
+            payload[elements[i].name] = elements[i].value;
+        }
+        delete payload[""];
+        sendHTTPRequest("POST", url, payload, callBack);
+
     }
 
 }
@@ -92,6 +95,9 @@ function sendHTTPRequest(method, url, payload, callBack) {
         }
     }
     xhttp.open(method, url, true);
+    console.log("This is the payload being sent...")
+    console.log(payload);
+
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.send(JSON.stringify(payload));
 }
