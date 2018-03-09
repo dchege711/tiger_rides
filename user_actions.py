@@ -4,12 +4,37 @@ import trip_actions
 users_db = tiger_rides_db("attendee_details")
 
 def is_in_db(key_val_pair):
+    """
+    Check whether the given key value pair is in the users database.
+
+    Args:
+
+        `key_val_pair` :JSON:: The query to make to the database
+
+    Returns:
+
+        :bool:: True if the key value pair exists in the DB, False 
+        otherwise.
+
+    """
     if users_db.read(key_val_pair) is not None:
         return True 
     else:
         return False
 
 def get_trips(user_id):
+    """
+    Get the trips associated with this user ID.
+
+    Args:
+
+        `user_id` :int:: The user's ID
+
+    Returns:
+
+        :JSON: Trip IDs of the trips owned and those joined.
+
+    """
     
     user_profile = users_db.read({"user_id": user_id})
     trips = {}
@@ -23,18 +48,59 @@ def get_trips(user_id):
     return trips
 
 def update_user_append(user_info):
+    """
+    Update information on a user's profile by appending to the
+    values in the existing field.
+
+    e.g. {"trips_owned": [1, 3, 4]} --> {"trips_owned": [1, 3, 4, 6]}
+
+    Args:
+
+        `user_info` :JSON:: Key-value pairs that need to be appended
+        to the existing values. The user_id field must be included.
+
+    Returns:
+
+        :JSON:: If the overwrite was successful, `user_info` will not 
+        be False
+
+    """
+
     user_id = user_info.pop("user_id", None)
     query = {"user_id": user_id}
     user = users_db.read(query)
-    
-    for key in user_info:
-        user[key].append(user_info[key]) # This is an inplace function!
-        user_info[key] = user[key]
-        
-    user_info["user_id"] = user_id 
-    return update_user(user_info)
+
+    if user is not None:
+        try:
+            for key in user_info:
+                # This is an inplace function!
+                user[key].append(user_info[key])
+                user_info[key] = user[key]
+                
+            user_info["user_id"] = user_id 
+            return update_user(user_info)
+
+        except KeyError:
+            return {"user_info": False}
+    else:
+        return {"user_info": False}
 
 def update_user(new_user_info):
+    """
+    Update information on a user's profile by overwriting the
+    values in the existing field.
+
+    Args:
+
+        `user_info` :JSON:: Key-value pairs that need to be appended
+        to the existing values. The user_id field must be included.
+
+    Returns:
+
+        :JSON:: If the overwrite was successful, `user_info` will not 
+        be False
+
+    """
     query = {"user_id": new_user_info["user_id"]}
     update_results = {}
     
@@ -46,8 +112,21 @@ def update_user(new_user_info):
             
     return update_results    
      
-
 def get_user(key_val_pairs):
+    """
+    Get the user associated with the key_val_pairs.
+
+    Args:
+
+        `key_val_pairs` :JSON:: Identifier attributes of a user.
+
+    Returns:
+
+        :JSON:: The user's account details if the user exists. 
+
+        `NoneType`: If the user doesn't exist.
+
+    """
     return users_db.read(key_val_pairs)
 
 def delete_user(user_id):
