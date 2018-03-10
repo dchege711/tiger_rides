@@ -77,11 +77,14 @@ def search_trips():
 
         return jsonify(results_in_html)
 
-def tiger_cards(attendee_details):
-    """
-    Create a pretty row for a html table that will contain the trips being made.
+    elif request.method == 'GET':
+        return "OK", 200
 
-    """
+@app.route('/static/img/logo/logo_cropped.png', methods=["GET"])
+def get_logo():
+    return send_file("./static/img/logo/logo_cropped.png", mimetype="image/png")
+
+def tiger_cards(attendee_details):
     return ''.join([
         "<tr><td>", attendee_details["name"], "</td>",
         "<td>", attendee_details["size"], "</td>",
